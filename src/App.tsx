@@ -440,30 +440,47 @@ export default function App() {
       </header>
 
       <main className="max-w-[1600px] mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left Column: Preview (Sticky) */}
-        <div className="lg:col-span-4 lg:sticky lg:top-24 flex flex-col gap-4">
-          <div className="relative aspect-[9/16] bg-black rounded-3xl overflow-hidden border border-white/10 shadow-2xl mx-auto w-full max-w-[360px]">
+     {/* Left Column: Preview (Sticky) */}
+        <div className="lg:col-span-4 sticky top-20 lg:top-24 z-40 flex flex-col gap-4 pointer-events-none lg:pointer-events-auto">
+          <div className="relative aspect-[9/16] bg-black rounded-xl lg:rounded-3xl overflow-hidden border border-white/20 shadow-2xl ml-auto lg:mx-auto w-[120px] sm:w-[160px] lg:w-full max-w-[360px] pointer-events-auto transition-all">
             {/* Canvas for Preview */}
             <canvas 
               ref={canvasRef}
               width={CANVAS_WIDTH}
               height={CANVAS_HEIGHT}
-              className="w-full h-full object-contain"
+              className="w-full h-full object-contain cursor-pointer"
+              onClick={togglePlay}
             />
             
             {!state.videoSrc && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm p-8 text-center">
-                <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10">
-                  <Upload className="w-10 h-10 text-white/40" />
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm p-4 lg:p-8 text-center">
+                <div className="w-10 h-10 lg:w-20 lg:h-20 bg-white/5 rounded-full flex items-center justify-center mb-2 lg:mb-6 border border-white/10">
+                  <Upload className="w-5 h-5 lg:w-10 lg:h-10 text-white/40" />
                 </div>
-                <h3 className="text-xl font-bold mb-2">Nenhum vídeo selecionado</h3>
-                <p className="text-white/50 text-sm mb-6">Faça o upload de um vídeo para começar a editar a arte.</p>
-                <label className="bg-white text-black px-6 py-3 rounded-full font-bold cursor-pointer hover:bg-white/90 transition-all active:scale-95">
-                  Selecionar Vídeo
+                <h3 className="text-sm lg:text-xl font-bold mb-1 lg:mb-2 leading-tight">Nenhum vídeo</h3>
+                <p className="hidden lg:block text-white/50 text-sm mb-6">Faça o upload de um vídeo para começar a editar a arte.</p>
+                <label className="bg-white text-black px-3 py-1.5 lg:px-6 lg:py-3 rounded-full text-xs lg:text-base font-bold cursor-pointer hover:bg-white/90 transition-all active:scale-95 whitespace-nowrap">
+                  Selecionar
                   <input type="file" accept="video/*" className="hidden" onChange={(e) => handleFileUpload(e, 'video')} />
                 </label>
               </div>
             )}
+
+            {/* Playback Controls Overlay */}
+            {state.videoSrc && (
+              <div className="absolute bottom-2 lg:bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 lg:gap-4 bg-black/60 backdrop-blur-md px-3 lg:px-6 py-1.5 lg:py-3 rounded-full border border-white/10 opacity-0 hover:opacity-100 transition-opacity scale-75 lg:scale-100 origin-bottom">
+                <button onClick={togglePlay} className="p-1 lg:p-2 hover:text-red-500 transition-colors">
+                  {isPlaying ? <Pause className="w-4 h-4 lg:w-6 lg:h-6 fill-current" /> : <Play className="w-4 h-4 lg:w-6 lg:h-6 fill-current" />}
+                </button>
+                <button onClick={() => { if(videoRef.current) videoRef.current.currentTime = 0; }} className="p-1 lg:p-2 hover:text-red-500 transition-colors">
+                  <RotateCcw className="w-3 h-3 lg:w-5 lg:h-5" />
+                </button>
+                <div className="hidden lg:block text-xs font-mono text-white/50 w-20 text-center">
+                  {Math.floor(currentTime)}s / {Math.floor(duration)}s
+                </div>
+              </div>
+            )}
+          </div>
 
             {/* Playback Controls Overlay */}
             {state.videoSrc && (
