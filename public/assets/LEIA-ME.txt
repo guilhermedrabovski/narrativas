@@ -1,0 +1,6 @@
+Coloque seus arquivos base aqui com os seguintes nomes:
+- fundo.png
+- layout_video.png
+- logo.png
+
+O sistema irá carregá-los automaticamente ao iniciar.

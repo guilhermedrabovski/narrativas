@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-unbounded: "Unbounded", sans-serif;
+}
+
+@layer base {
+  body {
+    @apply font-sans;
+  }
+}
