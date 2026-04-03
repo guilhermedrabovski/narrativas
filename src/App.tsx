@@ -356,9 +356,28 @@ export default function App() {
       console.warn("Could not capture audio stream:", err);
     }
     
+   // Detecta o melhor formato suportado pelo navegador (Safari suporta mp4, Chrome suporta webm com h264)
+    const getSupportedMimeType = () => {
+      const types = [
+        'video/mp4',
+        'video/webm;codecs=h264,opus',
+        'video/webm;codecs=h264',
+        'video/webm;codecs=vp9',
+        'video/webm'
+      ];
+      for (const type of types) {
+        if (MediaRecorder.isTypeSupported(type)) {
+          return type;
+        }
+      }
+      return '';
+    };
+
+    const mimeType = getSupportedMimeType();
+    
     // We need to record the video while it plays
     const recorder = new MediaRecorder(stream, {
-      mimeType: 'video/webm;codecs=vp9',
+      mimeType,
       videoBitsPerSecond: 10000000 // 10 Mbps for high quality
     });
 
@@ -366,22 +385,14 @@ export default function App() {
     recorder.ondataavailable = (e) => chunks.push(e.data);
     
     recorder.onstop = async () => {
-      const blob = new Blob(chunks, { type: 'video/webm' });
+      // Forçamos a extensão .mp4. Se o navegador gravou em h264, a maioria dos celulares vai ler perfeitamente.
+      const blob = new Blob(chunks, { type: mimeType.includes('mp4') ? 'video/mp4' : 'video/mp4' });
       const url = URL.createObjectURL(blob);
       
       const a = document.createElement('a');
       a.href = url;
-      a.download = `narrativas_criminais_${Date.now()}.webm`;
+      a.download = `narrativas_criminais_${Date.now()}.mp4`;
       a.click();
-      
-      setIsExporting(false);
-      setExportProgress(100);
-      confetti({
-        particleCount: 150,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
-    };
 
     // Reset video to start
     video.currentTime = 0;
